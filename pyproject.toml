@@ -1,0 +1,60 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "trello-cli"
+version = "0.1.0"
+description = "Markdown-first CLI over the Trello REST API, designed for LLM agents and humans."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Martin Lutonsky" }]
+dependencies = [
+    "typer>=0.12",
+    "httpx>=0.27,<1.0",  # token-bearing dep; pin the major to avoid auth-handling surprises
+]
+
+[project.scripts]
+trello = "trello_cli.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ruff>=0.5",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/trello_cli"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"CLAUDE.md" = "trello_cli/CLAUDE.md"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "F",   # pyflakes + pycodestyle
+    "I",        # isort
+    "B",        # bugbear
+    "UP",       # pyupgrade
+    "SIM",      # flake8-simplify
+    "RUF",      # ruff-specific
+]
+ignore = [
+    "E501",   # line too long — line-length is the source of truth
+    "B008",   # function call in argument defaults — typer.Option idiom
+    "UP007",  # X | None vs Optional[X] — Typer works either way
+    "SIM105", # contextlib.suppress vs try/except/pass — try/except is clearer here
+    "SIM108", # ternary — sometimes clearer as if/else
+    "RUF001", # ambiguous unicode — we use · › – deliberately in the Markdown renderers
+    "RUF002",
+    "RUF003",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
