@@ -1,5 +1,7 @@
 # trello-cli
 
+[![CI](https://github.com/mlutonsky/trello-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/mlutonsky/trello-cli/actions/workflows/ci.yml)
+
 A Markdown-first command-line wrapper around the Trello REST API, built for LLM agents
 (and pleasant enough to use by hand).
 
@@ -95,6 +97,8 @@ uv sync
 uv run pytest
 uv run ruff check src tests
 ```
+
+Release notes live in [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
