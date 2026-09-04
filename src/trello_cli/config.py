@@ -4,9 +4,8 @@ Design rule (deliberate): the ONLY file a human ever edits is `~/.trello/credent
 Everything derivable from the API — the board list above all — is cache the tool fills
 in by itself, never configuration someone has to assemble by hand.
 
-`credentials` is a shell-sourceable `KEY=value` file, the same format the older
-`~/.config/clubspire-trello/credentials` used, so it can simply be copied over.
-Environment variables of the same name win over the file.
+`credentials` is a shell-sourceable `KEY=value` file, so an existing one can simply be
+copied over. Environment variables of the same name win over the file.
 """
 
 from __future__ import annotations

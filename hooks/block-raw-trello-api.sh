@@ -9,6 +9,13 @@
 #     "hooks": [ { "type": "command", "command": "~/bin/trello-cli/hooks/block-raw-trello-api.sh" } ] } ] }
 #
 # Exit 0 = allow, exit 2 = block with the message on stderr.
+#
+# Scope, deliberately narrow: an HTTP client must be the command actually being run,
+# not merely a word somewhere in the string. Earlier revisions matched any command that
+# mentioned the API host and blocked `rm old-wrapper.sh`, `grep -r api.trello.com` and
+# heredocs that contained the URL as text. Intent cannot be recovered reliably from a
+# shell string, so this catches the common case — a direct curl/wget — and lets the
+# exotic ones through. A hook that fires on legitimate work just gets switched off.
 set -uo pipefail
 
 command_line="$(jq -r '.tool_input.command // ""' 2>/dev/null)"
@@ -19,13 +26,19 @@ case "$command_line" in
   *TRELLO_CLI_ALLOW_RAW=1*) exit 0 ;;
 esac
 
-hits_trello_api=false
+# 1. Does it name a Trello API endpoint at all?
 case "$command_line" in
-  *api.trello.com*|*trello.com/1/*|*clubspire-trello/trello.sh*) hits_trello_api=true ;;
+  *api.trello.com*|*trello.com/1/*) ;;
+  *) exit 0 ;;
 esac
-$hits_trello_api || exit 0
 
-# Allow the CLI itself, which of course talks to api.trello.com.
+# 2. Is an HTTP client the command being invoked — at the start, or after a separator?
+if ! printf '%s' "$command_line" |
+  grep -Eq '(^|[;&|(]|&&|\|\|)[[:space:]]*(sudo[[:space:]]+)?(env[[:space:]]+[^[:space:]]+=[^[:space:]]*[[:space:]]+)*(curl|wget|xh|httpie|http)([[:space:]]|$)'; then
+  exit 0
+fi
+
+# 3. Allow the CLI itself, which of course talks to api.trello.com.
 case "$command_line" in
   trello\ *|*/trello\ *|*[\;\|\&]\ trello\ *) exit 0 ;;
 esac

@@ -29,6 +29,9 @@ jobs:
           # The suite must never reach the real API or a real ~/.trello.
           TRELLO_API_KEY: ci-key
           TRELLO_TOKEN: ci-token
+      - name: Hook regression tests
+        if: matrix.python-version == '3.13'
+        run: ./hooks/tests/test-hook.sh
 
   build:
     needs: test
