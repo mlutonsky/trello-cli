@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "trello-cli"
-version = "0.1.0"
+dynamic = ["version"]  # single source of truth: src/trello_cli/__init__.py
 description = "Markdown-first CLI over the Trello REST API, designed for LLM agents and humans."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -24,6 +24,9 @@ dev = [
     "pytest>=8",
     "ruff>=0.5",
 ]
+
+[tool.hatch.version]
+path = "src/trello_cli/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/trello_cli"]

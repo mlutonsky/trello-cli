@@ -53,3 +53,12 @@ def test_missing_credentials_report_config_error(tmp_path):
     assert result.returncode == 1
     assert result.stdout == ""
     assert json.loads(result.stderr)["error"]["code"] == "config_error"
+
+
+def test_reported_version_matches_the_installed_package():
+    """The version is single-sourced in __init__.py; this catches a build that drifted."""
+    from importlib.metadata import version
+
+    from trello_cli import __version__
+
+    assert version("trello-cli") == __version__
