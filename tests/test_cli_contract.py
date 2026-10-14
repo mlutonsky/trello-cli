@@ -62,3 +62,24 @@ def test_reported_version_matches_the_installed_package():
     from trello_cli import __version__
 
     assert version("trello-cli") == __version__
+
+
+def test_root_options_after_the_command_are_moved_in_front():
+    from trello_cli.cli import _hoist_global_options
+
+    assert _hoist_global_options(["cards", "TODO", "-b", "office", "--json"]) == [
+        "-b", "office", "--json", "cards", "TODO",
+    ]
+    assert _hoist_global_options(["boards", "--board=x", "--refresh"]) == ["--board=x", "--refresh", "boards"]
+
+
+def test_root_options_after_a_double_dash_stay_where_they_are():
+    from trello_cli.cli import _hoist_global_options
+
+    assert _hoist_global_options(["comment", "add", "x", "--", "--dry-run"]) == ["comment", "add", "x", "--", "--dry-run"]
+
+
+def test_board_option_without_a_value_is_left_for_click_to_report():
+    from trello_cli.cli import _hoist_global_options
+
+    assert _hoist_global_options(["cards", "TODO", "-b"]) == ["cards", "TODO", "-b"]

@@ -65,6 +65,22 @@ def test_dry_run_describes_the_write_and_sends_nothing(api):
     assert not api.called("POST", "/1/cards")
 
 
+@pytest.mark.parametrize(
+    "args",
+    [
+        ["create", "--name", "x", "--list", "TODO", "--dry-run"],
+        ["create", "--dry-run", "--name", "x", "--list", "TODO"],
+        ["list", "create", "--name", "x", "--dry-run"],
+    ],
+)
+def test_dry_run_works_after_the_command(api, args):
+    result = runner.invoke(app, args)
+    assert result.exit_code == 0, result.output
+    assert "dry-run · " in result.output
+    assert not api.called("POST", "/1/cards")
+    assert not api.called("POST", "/1/lists")
+
+
 def test_dry_run_is_recorded_as_such(api):
     runner.invoke(app, ["--dry-run", "create", "--name", "x", "--list", "TODO"])
     entry = audit_lines()[-1]
