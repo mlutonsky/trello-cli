@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- The root options `-b/--board`, `--json`, `--dry-run` and `--refresh` also work after the
+  command, e.g. `trello create … --dry-run`. Before, Click rejected them there with
+  "No such option", although the docs promised `--dry-run` on every write.
+
 ## [0.1.0] — 2026-09-04
 
 First release.

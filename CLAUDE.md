@@ -12,6 +12,8 @@ parse raw JSON, or chain requests just to turn a name into an id.
   stdout empty. Codes: `config_error`, `resolution_error`, `input_error`,
   `trello_api_error` (carries `status`).
 - Every command has `--help`.
+- The root options `-b/--board`, `--json`, `--dry-run` and `--refresh` work anywhere on the
+  command line: `trello -b office create …` and `trello create … -b office` are the same.
 
 ## Identifiers — you never need a lookup call
 
@@ -45,7 +47,8 @@ git log --oneline | trello comment add 6h3iK2mA -
 ## Safety
 
 Writes are real. Every write is appended to `~/.trello/audit.log`. Every write command
-accepts `--dry-run`, which prints the request it would send and exits.
+accepts `--dry-run`, which prints the request it would send and exits. That includes
+`list create` and `list archive`.
 
 **Use `--dry-run` first when** you inferred the target card from conversation rather than
 being given it, when the user has not confirmed the exact column or board, or when moving
@@ -82,7 +85,9 @@ is permanent and therefore requires `--yes`.
 - `trello attach ls|add|get <card> …`
 - `trello check show|add|item|tick|untick <card> …`
 - `trello field show|set <card> <name> <value>`
-- `trello list create|archive`
+- `trello list create --name <column> [--pos top|bottom|<number>]` — the name is an option,
+  not a positional argument (`trello list create flos` is a usage error)
+- `trello list archive <column>`
 
 ## Recipes
 

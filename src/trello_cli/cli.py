@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import typer
+from typer.core import TyperGroup
 
 from . import __version__
 from .commands import attach, card_write, check, comment, field, list_, meta, read, reference
@@ -10,8 +11,44 @@ from .errors import TrelloCliError
 from .output import emit, emit_error
 from .state import state
 
+_GLOBAL_FLAGS = frozenset({"--json", "--dry-run", "--refresh"})
+_GLOBAL_VALUE_OPTIONS = frozenset({"--board", "-b"})
+
+
+def _hoist_global_options(args: list[str]) -> list[str]:
+    """Move the root options to the front, wherever they appear on the command line.
+
+    Click parses an option only on the command that declares it, so without this
+    `trello create … --dry-run` or `trello cards TODO -b office2000` fail with
+    "No such option". Nothing after `--` is touched.
+    """
+    hoisted: list[str] = []
+    rest: list[str] = []
+    i = 0
+    while i < len(args):
+        token = args[i]
+        if token == "--":
+            rest.extend(args[i:])
+            break
+        if token in _GLOBAL_FLAGS or token.startswith("--board="):
+            hoisted.append(token)
+        elif token in _GLOBAL_VALUE_OPTIONS and i + 1 < len(args):
+            hoisted.extend(args[i : i + 2])
+            i += 1
+        else:
+            rest.append(token)
+        i += 1
+    return hoisted + rest
+
+
+class _GlobalOptionsGroup(TyperGroup):
+    def parse_args(self, ctx: typer.Context, args: list[str]) -> list[str]:
+        return super().parse_args(ctx, _hoist_global_options(args))
+
+
 app = typer.Typer(
     name="trello",
+    cls=_GlobalOptionsGroup,
     help=(
         "Markdown-first CLI over the Trello REST API, designed for LLM agents and humans. "
         "Credentials live in ~/.trello/credentials (TRELLO_API_KEY, TRELLO_TOKEN); "
