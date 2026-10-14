@@ -103,6 +103,21 @@ def board_id(client: TrelloClient, raw: str | None = None) -> str:
         return str(match_by_name(_fetch_boards(client), value, kind="board")["id"])
 
 
+def board_full_id(client: TrelloClient, raw: str | None = None) -> str:
+    """Like `board_id`, but always the 24-character id.
+
+    A shortLink works in URL paths, but Trello rejects it as `idBoard` in a request
+    body ("invalid value for idBoard").
+    """
+    value = board_id(client, raw)
+    if _FULL_ID.match(value):
+        return value
+    for known in boards(client):
+        if value == known.get("shortLink"):
+            return str(known["id"])
+    return str(client.get(f"/boards/{value}", fields="id")["id"])
+
+
 # --- cards -------------------------------------------------------------------
 
 def card_id(client: TrelloClient, raw: str) -> str:

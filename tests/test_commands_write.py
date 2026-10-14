@@ -35,6 +35,8 @@ def api(monkeypatch):
             f"POST /1/cards/{CARD}/idMembers": {},
             f"DELETE /1/cards/{CARD}/idLabels/{'3' * 24}": {},
             f"POST /1/cards/{CARD}/actions/comments": {"id": "c1"},
+            "POST /1/lists": {"id": "l" * 24, "name": "flos"},
+            "GET /1/boards/Zz9Zz9Zz": {"id": "9" * 24},
         },
     )
 
@@ -240,3 +242,13 @@ def test_link_attachment_is_fetched_from_its_own_url(monkeypatch):
     result = runner.invoke(app, ["attach", "get", CARD, "issue", "--out", "-"])
     assert result.exit_code == 0, result.output
     assert api.called("GET", "/issue")
+
+
+@pytest.mark.parametrize(
+    ("board_ref", "expected"),
+    [("6RSm3uu9", BOARD_ID), ("https://trello.com/b/6RSm3uu9/clusbpire", BOARD_ID), ("Zz9Zz9Zz", "9" * 24)],
+)
+def test_list_create_sends_the_full_board_id(api, board_ref, expected):
+    result = runner.invoke(app, ["-b", board_ref, "list", "create", "--name", "flos"])
+    assert result.exit_code == 0, result.output
+    assert api.params_for("POST", "/1/lists")["idBoard"] == expected

@@ -101,7 +101,7 @@ def move(
         params_base: dict[str, Any] = {"idList": resolve.list_id(c, target_board, column), "pos": pos}
         if to_board:
             # Trello needs both together; idBoard alone leaves the card without a valid list.
-            params_base["idBoard"] = target_board
+            params_base["idBoard"] = resolve.board_full_id(c, target_board)
             warning = (
                 "\nnote: a cross-board move silently drops labels, members and custom field "
                 "values that do not exist on the target board"
