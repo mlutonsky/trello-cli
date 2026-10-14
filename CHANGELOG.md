@@ -11,6 +11,8 @@ All notable changes to this project are documented here. The format follows
 - The root options `-b/--board`, `--json`, `--dry-run` and `--refresh` also work after the
   command, e.g. `trello create … --dry-run`. Before, Click rejected them there with
   "No such option", although the docs promised `--dry-run` on every write.
+- `list create` and `move --to-board` send the board's full id. Trello rejects a shortLink as
+  `idBoard`, so both failed for a board given by shortLink or URL.
 
 ## [0.1.0] — 2026-09-04
 

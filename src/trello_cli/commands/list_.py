@@ -17,7 +17,7 @@ def create(
 ) -> None:
     """Create a column on the board."""
     with client() as c:
-        b = board(c)
+        b = resolve.board_full_id(c)
         created = write(
             c,
             command="list.create",
