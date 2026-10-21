@@ -32,7 +32,9 @@ fields are always given by **name** — `--list "Work in progress"`, `--label bu
 `--member lutonsky`. Matching is case-insensitive, exact beats prefix beats substring, and
 an ambiguous name is an error listing the candidates rather than a silent guess.
 
-Omit `--board` to use the default board (`trello use <board>` sets it).
+Omit `--board` to use the default board. `trello use <board>` stores it in
+`~/.trello/default`; without that file the tool falls back to `TRELLO_BOARD_ID`, from the
+environment or `~/.trello/credentials`. `TRELLO_HOME` moves the whole `~/.trello` directory.
 
 ## Long text
 
@@ -80,13 +82,15 @@ is permanent and therefore requires `--yes`.
 ### Writing
 - `trello create --name "…" --list <column> [--desc @f] [--label …] [--member …] [--due …] [--pos top] [--checklist "QA:a,b"]`
 - `trello update <card> [--name] [--desc] [--due] [--start] [--done/--undone]`
-- `trello move <card>… --list <column> [--to-board <board>] [--pos top]`
+- `trello move <card>… --list <column> [--to-board <board>] [--pos top]` — a move to another
+  board drops the labels, members and custom field values that do not exist there
 - `trello archive <card>…` · `trello unarchive <card>…`
 - `trello label add|rm <card> <label>…` · `trello member add|rm <card> <person>…`
 - `trello comment list|add|edit|rm <card|comment-id> …`
 - `trello attach ls|add|get <card> …`
 - `trello check show|add|item|tick|untick <card> …`
-- `trello field show|set <card> <name> <value>`
+- `trello field show <card>` · `trello field set <card> <name> <value>` (or `--clear`
+  instead of a value)
 - `trello list create --name <column> [--pos top|bottom|<number>]` — the name is an option,
   not a positional argument (`trello list create flos` is a usage error)
 - `trello list archive <column>`
