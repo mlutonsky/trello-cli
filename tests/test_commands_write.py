@@ -83,6 +83,43 @@ def test_dry_run_works_after_the_command(api, args):
     assert not api.called("POST", "/1/lists")
 
 
+def test_dry_run_of_a_single_write_emits_one_json_object(api):
+    result = runner.invoke(app, ["--json", "--dry-run", "create", "--name", "x", "--list", "TODO"])
+    assert result.exit_code == 0, result.output
+    planned = json.loads(result.output)
+    assert planned["dryRun"] is True
+    assert planned["would"]["path"] == "/cards"
+
+
+OTHER_CARD = "AbCdEfGh"
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        ["move", CARD, OTHER_CARD, "--list", "Hotovo"],
+        ["archive", CARD, OTHER_CARD],
+    ],
+)
+def test_dry_run_plans_every_card_and_sends_nothing(api, args):
+    result = runner.invoke(app, ["--json", "--dry-run", *args])
+    assert result.exit_code == 0, result.output
+    planned = json.loads(result.output)
+    assert [p["would"]["path"] for p in planned] == [f"/cards/{CARD}", f"/cards/{OTHER_CARD}"]
+    assert not any(m != "GET" for m, _, _ in api.calls)
+
+
+def test_dry_run_of_create_plans_the_checklist_requests_too(api):
+    result = runner.invoke(
+        app, ["--dry-run", "create", "--name", "x", "--list", "TODO", "--checklist", "QA:a,b"]
+    )
+    assert result.exit_code == 0, result.output
+    assert "dry-run · card.create · POST /cards\n" in result.output
+    assert "card.create.checklist · POST /cards/<card.create id>/checklists" in result.output
+    assert result.output.count("POST /checklists/<card.create.checklist id>/checkItems") == 2
+    assert not any(m != "GET" for m, _, _ in api.calls)
+
+
 def test_dry_run_is_recorded_as_such(api):
     runner.invoke(app, ["--dry-run", "create", "--name", "x", "--list", "TODO"])
     entry = audit_lines()[-1]

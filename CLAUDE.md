@@ -47,8 +47,10 @@ git log --oneline | trello comment add 6h3iK2mA -
 ## Safety
 
 Writes are real. Every write is appended to `~/.trello/audit.log`. Every write command
-accepts `--dry-run`, which prints the request it would send and exits. That includes
-`list create` and `list archive`.
+accepts `--dry-run`, which prints every request it would send and sends none. That
+includes `list create` and `list archive`. With `--json`, one request prints as one object
+and several as a list. A request that needs the id of an object created earlier in the same
+command shows a placeholder such as `/cards/<card.create id>/checklists`.
 
 **Use `--dry-run` first when** you inferred the target card from conversation rather than
 being given it, when the user has not confirmed the exact column or board, or when moving

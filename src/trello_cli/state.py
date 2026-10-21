@@ -7,12 +7,19 @@ signatures about Trello rather than about plumbing.
 
 from __future__ import annotations
 
+from typing import Any
+
 
 class _State:
     json_output: bool = False
     dry_run: bool = False
     board: str | None = None
     refresh: bool = False
+    # Requests collected by `--dry-run`, printed together once the command finishes.
+    planned: list[dict[str, Any]]
+
+    def __init__(self) -> None:
+        self.planned = []
 
 
 state = _State()
@@ -23,3 +30,4 @@ def reset_for_tests() -> None:
     state.dry_run = False
     state.board = None
     state.refresh = False
+    state.planned = []

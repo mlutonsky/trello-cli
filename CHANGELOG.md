@@ -13,6 +13,10 @@ All notable changes to this project are documented here. The format follows
   "No such option", although the docs promised `--dry-run` on every write.
 - `list create` and `move --to-board` send the board's full id. Trello rejects a shortLink as
   `idBoard`, so both failed for a board given by shortLink or URL.
+- `--dry-run` prints every request a command would send. Before, it stopped after the first
+  one, so `move` or `archive` of several cards and `create --checklist` showed only the
+  first request. With `--json`, several requests print as a list; a single request keeps
+  the one-object shape.
 
 ## [0.1.0] — 2026-09-04
 
