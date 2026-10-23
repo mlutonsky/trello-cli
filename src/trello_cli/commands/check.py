@@ -15,7 +15,9 @@ app = typer.Typer(no_args_is_help=True, help="Read and write card checklists.")
 
 
 def _checklists(c, card_id: str) -> list[dict[str, Any]]:
-    return c.get(f"/cards/{card_id}/checklists", fields="id,name,pos", checkItem_fields="id,name,state,pos")
+    return c.get(
+        f"/cards/{card_id}/checklists", fields="id,name,pos", checkItem_fields="id,name,state,pos"
+    )
 
 
 def _find_item(checklists: list[dict[str, Any]], needle: str) -> dict[str, Any]:
@@ -65,7 +67,9 @@ def add(
 def item_add(
     identifier: str = typer.Argument(..., help="Card id, shortLink, URL or #number."),
     name: str = typer.Argument(..., help="Item text."),
-    checklist: str = typer.Option(None, "--checklist", help="Which checklist (default: the only one)."),
+    checklist: str = typer.Option(
+        None, "--checklist", help="Which checklist (default: the only one)."
+    ),
 ) -> None:
     """Add an item to an existing checklist."""
     with client() as c:

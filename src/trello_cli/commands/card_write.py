@@ -80,7 +80,9 @@ def update(
         "dueComplete": done,
     }
     if all(v is None for v in params.values()):
-        raise InputError("nothing to update — pass at least one of --name/--desc/--due/--start/--done")
+        raise InputError(
+            "nothing to update — pass at least one of --name/--desc/--due/--start/--done"
+        )
     with client() as c:
         cid = resolve.card_id(c, identifier)
         card = write(c, command="card.update", method="PUT", path=f"/cards/{cid}", params=params)
@@ -98,7 +100,10 @@ def move(
     warning = ""
     with client() as c:
         target_board = board(c, to_board) if to_board else board(c)
-        params_base: dict[str, Any] = {"idList": resolve.list_id(c, target_board, column), "pos": pos}
+        params_base: dict[str, Any] = {
+            "idList": resolve.list_id(c, target_board, column),
+            "pos": pos,
+        }
         if to_board:
             # Trello needs both together; idBoard alone leaves the card without a valid list.
             params_base["idBoard"] = resolve.board_full_id(c, target_board)

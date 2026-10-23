@@ -61,9 +61,7 @@ app = typer.Typer(
 @app.callback(invoke_without_command=True)
 def _root(
     ctx: typer.Context,
-    json_output: bool = typer.Option(
-        False, "--json", help="Emit JSON instead of Markdown."
-    ),
+    json_output: bool = typer.Option(False, "--json", help="Emit JSON instead of Markdown."),
     board: str = typer.Option(
         None, "--board", "-b", help="Board id, shortLink, URL or name. Overrides the default."
     ),

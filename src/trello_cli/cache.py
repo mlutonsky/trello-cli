@@ -80,6 +80,7 @@ def reset_for_tests() -> None:
 
 # --- boards.json -------------------------------------------------------------
 
+
 def get_boards() -> tuple[list[dict[str, Any]], float]:
     """Return (boards, age_seconds). Age is `inf` when nothing is cached yet."""
     data = _load(BOARDS_FILE)
@@ -97,6 +98,7 @@ def put_boards(boards: list[dict[str, Any]]) -> None:
 
 
 # --- cache.json (per-board name→id maps) -------------------------------------
+
 
 def get_board_map(board_id: str, kind: str) -> dict[str, Any] | None:
     """`kind` is one of lists / labels / members / fields."""

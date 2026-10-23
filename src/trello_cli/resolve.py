@@ -30,6 +30,7 @@ BOARD_FIELDS = "id,name,shortLink,shortUrl,closed"
 
 # --- generic name matching ---------------------------------------------------
 
+
 def match_by_name(
     candidates: list[dict[str, Any]],
     needle: str,
@@ -65,6 +66,7 @@ def match_by_name(
 
 
 # --- boards ------------------------------------------------------------------
+
 
 def _fetch_boards(client: TrelloClient) -> list[dict[str, Any]]:
     boards = client.get("/members/me/boards", fields=BOARD_FIELDS, filter="open")
@@ -120,6 +122,7 @@ def board_full_id(client: TrelloClient, raw: str | None = None) -> str:
 
 # --- cards -------------------------------------------------------------------
 
+
 def card_id(client: TrelloClient, raw: str) -> str:
     """Accept a full id, a shortLink, a card URL, or `#87` within the current board."""
     value = raw.strip()
@@ -143,9 +146,7 @@ def _card_by_idshort(client: TrelloClient, idshort: int) -> str:
     """`idShort` has no direct endpoint and Trello documents it as subject to change,
     so it is looked up live and never cached as a key."""
     board = board_id(client)
-    cards = client.get(
-        f"/boards/{board}/cards", fields="idShort,name,shortLink", filter="all"
-    )
+    cards = client.get(f"/boards/{board}/cards", fields="idShort,name,shortLink", filter="all")
     for card in cards:
         if card.get("idShort") == idshort:
             return str(card.get("shortLink") or card.get("id"))
@@ -153,6 +154,7 @@ def _card_by_idshort(client: TrelloClient, idshort: int) -> str:
 
 
 # --- per-board reference data ------------------------------------------------
+
 
 def _board_collection(
     client: TrelloClient, board: str, kind: str, path: str, *, refresh: bool = False, **params: Any
@@ -168,22 +170,35 @@ def _board_collection(
 
 def lists(client: TrelloClient, board: str, *, refresh: bool = False) -> list[dict[str, Any]]:
     return _board_collection(
-        client, board, "lists", f"/boards/{board}/lists",
-        refresh=refresh, fields="id,name,pos,closed",
+        client,
+        board,
+        "lists",
+        f"/boards/{board}/lists",
+        refresh=refresh,
+        fields="id,name,pos,closed",
     )
 
 
 def labels(client: TrelloClient, board: str, *, refresh: bool = False) -> list[dict[str, Any]]:
     return _board_collection(
-        client, board, "labels", f"/boards/{board}/labels",
-        refresh=refresh, fields="id,name,color", limit=1000,
+        client,
+        board,
+        "labels",
+        f"/boards/{board}/labels",
+        refresh=refresh,
+        fields="id,name,color",
+        limit=1000,
     )
 
 
 def members(client: TrelloClient, board: str, *, refresh: bool = False) -> list[dict[str, Any]]:
     return _board_collection(
-        client, board, "members", f"/boards/{board}/members",
-        refresh=refresh, fields="id,username,fullName",
+        client,
+        board,
+        "members",
+        f"/boards/{board}/members",
+        refresh=refresh,
+        fields="id,username,fullName",
     )
 
 

@@ -49,7 +49,9 @@ def card(
             )
         data = c.get(f"/cards/{cid}", **params)
         definitions = (
-            resolve.custom_fields(c, data.get("idBoard", "")) if data.get("customFieldItems") else []
+            resolve.custom_fields(c, data.get("idBoard", ""))
+            if data.get("customFieldItems")
+            else []
         )
 
     actions = [a for a in (data.get("actions") or []) if a.get("type") == "commentCard"]
@@ -116,7 +118,9 @@ def snapshot(
 def search(
     query: str = typer.Argument(..., help="Trello search query, e.g. 'export label:bug is:open'."),
     limit: int = typer.Option(20, "--limit", "-n", help="Maximum cards to return."),
-    all_boards: bool = typer.Option(False, "--all-boards", help="Search every board, not just the current one."),
+    all_boards: bool = typer.Option(
+        False, "--all-boards", help="Search every board, not just the current one."
+    ),
 ) -> None:
     """Search cards. Supports Trello's operators: label:, list:, @me, due:week, is:open, sort:due."""
     with client() as c:
@@ -166,7 +170,8 @@ def mine(
         if not items:
             return "_(no cards assigned)_"
         return "\n".join(
-            render.card_line(x) + (f" · {names[x['idBoard']]}" if names.get(x.get("idBoard")) else "")
+            render.card_line(x)
+            + (f" · {names[x['idBoard']]}" if names.get(x.get("idBoard")) else "")
             for x in items
         )
 

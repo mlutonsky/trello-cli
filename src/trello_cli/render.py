@@ -51,7 +51,9 @@ def label_names(labels: list[dict[str, Any]] | None) -> str:
 
 
 def member_names(members: list[dict[str, Any]] | None) -> str:
-    return ", ".join(f"@{m.get('username') or m.get('fullName') or m.get('id')}" for m in members or [])
+    return ", ".join(
+        f"@{m.get('username') or m.get('fullName') or m.get('id')}" for m in members or []
+    )
 
 
 def _due(card: dict[str, Any]) -> str:
@@ -123,7 +125,7 @@ def _custom_fields(card: dict[str, Any], definitions: list[dict[str, Any]]) -> l
 def custom_field_value(item: dict[str, Any], definition: dict[str, Any]) -> str:
     """Unwrap `{"value": {"text": …}}` / `{"idValue": …}` into something printable."""
     if item.get("idValue"):
-        options = (definition.get("options") or definition.get("display", {}).get("options") or [])
+        options = definition.get("options") or definition.get("display", {}).get("options") or []
         for opt in options:
             if opt.get("id") == item["idValue"]:
                 return str((opt.get("value") or {}).get("text") or opt.get("id"))
@@ -170,7 +172,13 @@ def card_context(
     """The whole card in one block — description, checklists, fields, attachments, comments."""
     short = card.get("shortLink") or card.get("id") or ""
     header = " ".join(
-        p for p in (f"#{card['idShort']}" if card.get("idShort") else "", card.get("name", ""), f"[{short}]") if p
+        p
+        for p in (
+            f"#{card['idShort']}" if card.get("idShort") else "",
+            card.get("name", ""),
+            f"[{short}]",
+        )
+        if p
     )
     lines = [header]
 

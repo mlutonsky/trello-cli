@@ -57,12 +57,14 @@ def write(
     create. Follow-up writes that use that id are planned too.
     """
     body = json_body if json_body is not None else serialise(params)
-    audit.record(
-        command=command, method=method, path=path, body=body, dry_run=state.dry_run
-    )
+    audit.record(command=command, method=method, path=path, body=body, dry_run=state.dry_run)
     if state.dry_run:
         state.planned.append(
-            {"dryRun": True, "command": command, "would": {"method": method, "path": path, "body": body}}
+            {
+                "dryRun": True,
+                "command": command,
+                "would": {"method": method, "path": path, "body": body},
+            }
         )
         return {"id": f"<{command} id>"}
     response = c.request(method, path, params=params, json_body=json_body, files=files)

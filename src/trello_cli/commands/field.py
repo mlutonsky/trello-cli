@@ -84,4 +84,7 @@ def set_value(
             json_body=body,
         )
     shown = "(cleared)" if clear else value
-    ok({"card": cid, "field": definition.get("name"), "value": shown}, f"{definition.get('name')}: {shown}")
+    ok(
+        {"card": cid, "field": definition.get("name"), "value": shown},
+        f"{definition.get('name')}: {shown}",
+    )

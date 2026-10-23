@@ -68,15 +68,29 @@ def test_root_options_after_the_command_are_moved_in_front():
     from trello_cli.cli import _hoist_global_options
 
     assert _hoist_global_options(["cards", "TODO", "-b", "office", "--json"]) == [
-        "-b", "office", "--json", "cards", "TODO",
+        "-b",
+        "office",
+        "--json",
+        "cards",
+        "TODO",
     ]
-    assert _hoist_global_options(["boards", "--board=x", "--refresh"]) == ["--board=x", "--refresh", "boards"]
+    assert _hoist_global_options(["boards", "--board=x", "--refresh"]) == [
+        "--board=x",
+        "--refresh",
+        "boards",
+    ]
 
 
 def test_root_options_after_a_double_dash_stay_where_they_are():
     from trello_cli.cli import _hoist_global_options
 
-    assert _hoist_global_options(["comment", "add", "x", "--", "--dry-run"]) == ["comment", "add", "x", "--", "--dry-run"]
+    assert _hoist_global_options(["comment", "add", "x", "--", "--dry-run"]) == [
+        "comment",
+        "add",
+        "x",
+        "--",
+        "--dry-run",
+    ]
 
 
 def test_board_option_without_a_value_is_left_for_click_to_report():

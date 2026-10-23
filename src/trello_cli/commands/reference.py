@@ -32,7 +32,9 @@ def boards(
             return "_(no boards)_"
         lines = []
         for b in items:
-            mark = " ←default" if current in {b.get("id"), b.get("shortLink"), b.get("name")} else ""
+            mark = (
+                " ←default" if current in {b.get("id"), b.get("shortLink"), b.get("name")} else ""
+            )
             lines.append(f"[{b.get('shortLink')}] {b.get('name')}{mark}")
         return "\n".join(lines)
 
@@ -46,10 +48,12 @@ def lists() -> None:
         items = resolve.lists(c, b, refresh=state.refresh)
     emit(
         items,
-        lambda: "\n".join(
-            f"{i.get('name')}" + (" (archived)" if i.get("closed") else "") for i in items
-        )
-        or "_(no lists)_",
+        lambda: (
+            "\n".join(
+                f"{i.get('name')}" + (" (archived)" if i.get("closed") else "") for i in items
+            )
+            or "_(no lists)_"
+        ),
     )
 
 
@@ -60,8 +64,10 @@ def members() -> None:
         items = resolve.members(c, b, refresh=state.refresh)
     emit(
         items,
-        lambda: "\n".join(f"@{m.get('username')} · {m.get('fullName')}" for m in items)
-        or "_(no members)_",
+        lambda: (
+            "\n".join(f"@{m.get('username')} · {m.get('fullName')}" for m in items)
+            or "_(no members)_"
+        ),
     )
 
 
@@ -72,10 +78,13 @@ def labels() -> None:
         items = resolve.labels(c, b, refresh=state.refresh)
     emit(
         items,
-        lambda: "\n".join(
-            f"{lab.get('name') or '(unnamed)'} · {lab.get('color') or 'no colour'}" for lab in items
-        )
-        or "_(no labels)_",
+        lambda: (
+            "\n".join(
+                f"{lab.get('name') or '(unnamed)'} · {lab.get('color') or 'no colour'}"
+                for lab in items
+            )
+            or "_(no labels)_"
+        ),
     )
 
 

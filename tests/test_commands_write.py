@@ -14,7 +14,12 @@ from ._fake_api import BOARD_ID, CARD, LIST_DONE, LIST_TODO, install
 
 runner = CliRunner()
 
-CREATED = {"id": "a" * 24, "shortLink": CARD, "shortUrl": f"https://trello.com/c/{CARD}", "name": "New card"}
+CREATED = {
+    "id": "a" * 24,
+    "shortLink": CARD,
+    "shortUrl": f"https://trello.com/c/{CARD}",
+    "name": "New card",
+}
 
 
 def audit_lines() -> list[dict]:
@@ -43,7 +48,18 @@ def api(monkeypatch):
 
 def test_create_resolves_names_to_ids(api):
     result = runner.invoke(
-        app, ["create", "--name", "New card", "--list", "TODO", "--label", "bug", "--member", "lutonsky"]
+        app,
+        [
+            "create",
+            "--name",
+            "New card",
+            "--list",
+            "TODO",
+            "--label",
+            "bug",
+            "--member",
+            "lutonsky",
+        ],
     )
     assert result.exit_code == 0, result.output
     params = api.params_for("POST", "/1/cards")
@@ -211,7 +227,11 @@ def test_checklist_tick_uses_the_singular_checkitem_route(monkeypatch):
         monkeypatch,
         {
             f"GET /1/cards/{CARD}/checklists": [
-                {"id": "cl1", "name": "QA", "checkItems": [{"id": "i1", "name": "reproduce", "state": "incomplete"}]}
+                {
+                    "id": "cl1",
+                    "name": "QA",
+                    "checkItems": [{"id": "i1", "name": "reproduce", "state": "incomplete"}],
+                }
             ],
             f"PUT /1/cards/{CARD}/checkItem/i1": {"name": "reproduce", "state": "complete"},
         },
@@ -256,7 +276,12 @@ def test_attachment_download_uses_the_authenticated_route(monkeypatch):
         monkeypatch,
         {
             f"GET /1/cards/{CARD}/attachments": [
-                {"id": "at1", "name": "spec.pdf", "isUpload": True, "url": "https://attachments.trello.com/x"}
+                {
+                    "id": "at1",
+                    "name": "spec.pdf",
+                    "isUpload": True,
+                    "url": "https://attachments.trello.com/x",
+                }
             ],
             f"GET /1/cards/{CARD}/attachments/at1/download/spec.pdf": {},
         },
@@ -271,7 +296,12 @@ def test_link_attachment_is_fetched_from_its_own_url(monkeypatch):
         monkeypatch,
         {
             f"GET /1/cards/{CARD}/attachments": [
-                {"id": "at2", "name": "issue", "isUpload": False, "url": "https://example.com/issue"}
+                {
+                    "id": "at2",
+                    "name": "issue",
+                    "isUpload": False,
+                    "url": "https://example.com/issue",
+                }
             ],
             "GET /issue": {},
         },
@@ -283,7 +313,11 @@ def test_link_attachment_is_fetched_from_its_own_url(monkeypatch):
 
 @pytest.mark.parametrize(
     ("board_ref", "expected"),
-    [("6RSm3uu9", BOARD_ID), ("https://trello.com/b/6RSm3uu9/clusbpire", BOARD_ID), ("Zz9Zz9Zz", "9" * 24)],
+    [
+        ("6RSm3uu9", BOARD_ID),
+        ("https://trello.com/b/6RSm3uu9/clusbpire", BOARD_ID),
+        ("Zz9Zz9Zz", "9" * 24),
+    ],
 )
 def test_list_create_sends_the_full_board_id(api, board_ref, expected):
     result = runner.invoke(app, ["-b", board_ref, "list", "create", "--name", "flos"])
