@@ -161,11 +161,19 @@ class TrelloClient:
         json_body: Any | None = None,
     ) -> httpx.Response:
         query = serialise(params)
+        # A write sends its parameters as a form body: in the URL, Trello's CloudFront
+        # rejects a long description or comment with 414 at around 8 kB.
+        in_body = method in ("POST", "PUT") and json_body is None
         last_error: TrelloApiError | None = None
         for attempt in range(1, MAX_ATTEMPTS + 1):
             self._throttle()
             response = self._http.request(
-                method, path, params=query, files=files, json=json_body
+                method,
+                path,
+                params=None if in_body else query,
+                data=(query or None) if in_body else None,
+                files=files,
+                json=json_body,
             )
             self._note_limits(response)
             if response.status_code < 400:

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from urllib.parse import parse_qs
+
 import httpx
 import pytest
 
@@ -20,6 +22,44 @@ def test_serialise_booleans_and_lists():
         "c": "x,y",
         "e": "3",
     }
+
+
+def test_write_sends_params_in_the_body_not_the_url():
+    seen: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(request)
+        return httpx.Response(200, json={})
+
+    desc = "Popis s diakritikou: příliš žluťoučký kůň. " * 400  # ~50 kB once URL-encoded
+    client = TrelloClient(transport=httpx.MockTransport(handler))
+    client.put("/cards/abc", desc=desc, closed=False)
+    client.get("/cards/abc", fields="desc")
+    client.close()
+
+    put, get = seen
+    assert put.url.query == b""
+    assert put.headers["content-type"] == "application/x-www-form-urlencoded"
+    assert parse_qs(put.content.decode()) == {"desc": [desc], "closed": ["false"]}
+    assert get.url.params["fields"] == "desc"
+    assert get.content == b""
+
+
+def test_upload_sends_params_as_multipart_fields():
+    seen: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(request)
+        return httpx.Response(200, json={})
+
+    client = TrelloClient(transport=httpx.MockTransport(handler))
+    client.upload("/cards/abc/attachments", files={"file": ("a.txt", b"x")}, name="a.txt")
+    client.close()
+
+    (upload,) = seen
+    assert upload.url.query == b""
+    assert upload.headers["content-type"].startswith("multipart/form-data")
+    assert b'name="name"\r\n\r\na.txt' in upload.read()
 
 
 def test_auth_header_only_on_trello_hosts():

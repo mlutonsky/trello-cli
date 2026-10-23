@@ -8,6 +8,7 @@ puts every command under test without touching command code.
 from __future__ import annotations
 
 from typing import Any
+from urllib.parse import parse_qsl
 
 import httpx
 
@@ -28,7 +29,10 @@ class FakeApi:
 
     def handler(self, request: httpx.Request) -> httpx.Response:
         key = f"{request.method} {request.url.path}"
-        self.calls.append((request.method, request.url.path, dict(request.url.params)))
+        params = dict(request.url.params)
+        if request.headers.get("content-type") == "application/x-www-form-urlencoded":
+            params.update(parse_qsl(request.content.decode()))
+        self.calls.append((request.method, request.url.path, params))
         if key not in self.routes:
             raise AssertionError(f"unmocked route {key} (mocked: {sorted(self.routes)})")
         payload = self.routes[key]

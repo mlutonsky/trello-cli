@@ -8,6 +8,10 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- Writes send their parameters in the request body instead of the URL, so a long
+  description or comment no longer fails with HTTP 414. The URL limit hit at around
+  8 kB once encoded, which non-ASCII text such as Czech reaches at 4–5 thousand
+  characters. Trello's own limit of 16,384 characters per description or comment remains.
 - The root options `-b/--board`, `--json`, `--dry-run` and `--refresh` also work after the
   command, e.g. `trello create … --dry-run`. Before, Click rejected them there with
   "No such option", although the docs promised `--dry-run` on every write.
