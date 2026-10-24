@@ -7,7 +7,7 @@ import typer
 from .. import resolve
 from ._common import board, client, ok, write
 
-app = typer.Typer(no_args_is_help=True, help="Create and archive board columns.")
+app = typer.Typer(no_args_is_help=True, help="Create, reorder and archive board columns.")
 
 
 @app.command("create")
@@ -26,6 +26,21 @@ def create(
             params={"name": name, "idBoard": b, "pos": pos},
         )
     ok(created, f"created column {created.get('name')}")
+
+
+@app.command("move")
+def move(
+    column: str = typer.Argument(..., help="Column name or id."),
+    pos: str = typer.Option(..., "--pos", help="top, bottom or a number."),
+) -> None:
+    """Move a column to another position on its board."""
+    with client() as c:
+        b = board(c)
+        lid = resolve.list_id(c, b, column)
+        changed = write(
+            c, command="list.move", method="PUT", path=f"/lists/{lid}", params={"pos": pos}
+        )
+    ok(changed, f"moved column {changed.get('name')} to {pos}")
 
 
 @app.command("archive")

@@ -50,7 +50,7 @@ git log --oneline | trello comment add 6h3iK2mA -
 
 Writes are real. Every write is appended to `~/.trello/audit.log`. Every write command
 accepts `--dry-run`, which prints every request it would send and sends none. That
-includes `list create` and `list archive`. With `--json`, one request prints as one object
+includes `list create`, `list move` and `list archive`. With `--json`, one request prints as one object
 and several as a list. A request that needs the id of an object created earlier in the same
 command shows a placeholder such as `/cards/<card.create id>/checklists`.
 
@@ -93,6 +93,7 @@ is permanent and therefore requires `--yes`.
   instead of a value)
 - `trello list create --name <column> [--pos top|bottom|<number>]` — the name is an option,
   not a positional argument (`trello list create flos` is a usage error)
+- `trello list move <column> --pos top|bottom|<number>` — reorder columns on the board
 - `trello list archive <column>`
 
 ## Recipes

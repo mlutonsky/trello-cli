@@ -6,6 +6,10 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `list move <column> --pos top|bottom|<number>` reorders columns on the board.
+
 ### Fixed
 
 - Writes send their parameters in the request body instead of the URL, so a long

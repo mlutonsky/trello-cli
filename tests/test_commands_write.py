@@ -41,6 +41,7 @@ def api(monkeypatch):
             f"DELETE /1/cards/{CARD}/idLabels/{'3' * 24}": {},
             f"POST /1/cards/{CARD}/actions/comments": {"id": "c1"},
             "POST /1/lists": {"id": "l" * 24, "name": "flos"},
+            f"PUT /1/lists/{LIST_DONE}": {"id": LIST_DONE, "name": "Hotovo"},
             "GET /1/boards/Zz9Zz9Zz": {"id": "9" * 24},
         },
     )
@@ -323,3 +324,9 @@ def test_list_create_sends_the_full_board_id(api, board_ref, expected):
     result = runner.invoke(app, ["-b", board_ref, "list", "create", "--name", "flos"])
     assert result.exit_code == 0, result.output
     assert api.params_for("POST", "/1/lists")["idBoard"] == expected
+
+
+def test_list_move_sends_only_the_position(api):
+    result = runner.invoke(app, ["list", "move", "Hotovo", "--pos", "top"])
+    assert result.exit_code == 0, result.output
+    assert api.params_for("PUT", f"/1/lists/{LIST_DONE}") == {"pos": "top"}
