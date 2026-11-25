@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.1] — 2026-11-25
+
 ### Security
 
 - `attach get --out <dir>` saves an attachment under the last component of its name only, so
@@ -66,6 +68,7 @@ First release.
   stale cache costs one extra request rather than an error.
 - Cards are never deleted — `archive` is reversible and is the only removal offered.
 
-[Unreleased]: https://github.com/mlutonsky/trello-cli/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/mlutonsky/trello-cli/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/mlutonsky/trello-cli/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/mlutonsky/trello-cli/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/mlutonsky/trello-cli/releases/tag/v0.1.0
