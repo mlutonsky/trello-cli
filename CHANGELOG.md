@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Security
+
+- `attach get --out <dir>` saves an attachment under the last component of its name only, so
+  a name such as `../../.bashrc` or `/etc/passwd`, which whoever uploaded it chose, can no
+  longer write outside the directory.
+
 ## [0.2.0] — 2026-10-24
 
 ### Added

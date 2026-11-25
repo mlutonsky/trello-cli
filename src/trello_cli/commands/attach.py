@@ -97,6 +97,18 @@ def add(
     ok(created, f"attached {created.get('name')} ({created.get('id')})")
 
 
+def _file_name(item: dict) -> str:
+    """The attachment's name as a plain file name inside the target directory.
+
+    Whoever uploaded the attachment chose its name, so `../x` or `/etc/x` must not decide
+    where the file lands: only the last path component counts, and a name that is
+    nothing but dots or separators falls back to the attachment id.
+    """
+    name = (item.get("name") or "").replace("\\", "/").replace("\0", "")
+    base = name.rsplit("/", 1)[-1].strip()
+    return base if base.strip(".") else item["id"]
+
+
 @app.command("get")
 def get(
     identifier: str = typer.Argument(..., help="Card id, shortLink, URL or #number."),
@@ -121,7 +133,7 @@ def get(
         return
     directory = Path(out).expanduser() if out else Path.cwd()
     directory.mkdir(parents=True, exist_ok=True)
-    target = directory / (item.get("name") or item["id"])
+    target = directory / _file_name(item)
     target.write_bytes(content)
     emit(
         {"path": str(target), "bytes": len(content), "contentType": content_type},

@@ -313,6 +313,40 @@ def test_link_attachment_is_fetched_from_its_own_url(monkeypatch):
 
 
 @pytest.mark.parametrize(
+    ("name", "saved_as"),
+    [
+        ("spec.pdf", "spec.pdf"),
+        ("../../.bashrc", ".bashrc"),
+        ("/etc/passwd", "passwd"),
+        ("..\\..\\win.ini", "win.ini"),
+        ("dir/", "at1"),
+        ("..", "at1"),
+        ("...", "at1"),
+        ("   ", "at1"),
+        ("", "at1"),
+        ("a\0b.txt", "ab.txt"),
+        ("příloha – zadání.pdf", "příloha – zadání.pdf"),
+    ],
+)
+def test_attachment_is_saved_inside_the_target_directory(monkeypatch, tmp_path, name, saved_as):
+    """The uploader picks the name; `../` or an absolute path must not leave `--out`."""
+    install(
+        monkeypatch,
+        {
+            f"GET /1/cards/{CARD}/attachments": [
+                {"id": "at1", "name": name, "isUpload": False, "url": "https://example.com/f"}
+            ],
+            "GET /f": {},
+        },
+    )
+    out = tmp_path / "out"
+    result = runner.invoke(app, ["attach", "get", CARD, "at1", "--out", str(out)])
+    assert result.exit_code == 0, result.output
+    assert [p.name for p in out.iterdir()] == [saved_as]
+    assert [p for p in tmp_path.rglob("*") if p.is_file()] == [out / saved_as]
+
+
+@pytest.mark.parametrize(
     ("board_ref", "expected"),
     [
         ("6RSm3uu9", BOARD_ID),
